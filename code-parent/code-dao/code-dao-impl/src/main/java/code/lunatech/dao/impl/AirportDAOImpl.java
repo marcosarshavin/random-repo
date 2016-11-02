@@ -23,6 +23,27 @@ public class AirportDAOImpl implements AirportDAO {
 		
 		try {
 			
+			List<Airport> airports = this.getAllAirports();
+			
+			List<Airport> airportsFiltered = airports.stream().filter(
+					airport -> airport.getIso_country().equals(countryCode))
+				.collect(Collectors.toList());
+			
+			return airportsFiltered;
+		
+		} catch (Exception e)	{
+			throw new DataAccessException("Error ocurred when trying to obtain airports by country code " + countryCode, e);
+		}
+	}
+	
+	public void setAirportsCsv(String airportsCsv)	{
+		this.airportsCsv = airportsCsv;
+	}
+
+	@Override
+	public List<Airport> getAllAirports() {
+
+		try {
 			//TODO: Cerrar reader
 			BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(airportsCsv)));
 			
@@ -41,19 +62,11 @@ public class AirportDAOImpl implements AirportDAO {
 				airports.add(AirportMapper.fromStringtoAirport(csvLine));
 			}
 			
-			List<Airport> airportsFiltered = airports.stream().filter(
-					airport -> airport.getIso_country().equals(countryCode))
-				.collect(Collectors.toList());
-			
-			return airportsFiltered;
+			return airports;
 		
 		} catch (Exception e)	{
-			throw new DataAccessException("Error ocurred when trying to obtain airports by country code " + countryCode, e);
+			throw new DataAccessException("Error ocurred when trying to obtain airports");
 		}
-	}
-	
-	public void setAirportsCsv(String airportsCsv)	{
-		this.airportsCsv = airportsCsv;
 	}
 	
 }

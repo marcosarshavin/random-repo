@@ -74,12 +74,22 @@ public class AirportServiceImpl implements AirportService {
 		
 		List<AirportCountryDTO> airportCountryInfo = new ArrayList<AirportCountryDTO>();
 		
+		List<Airport> allAirports = airportDAO.getAllAirports();
+		
 		allCountries.stream().forEach(country -> {
 			AirportCountryDTO airportCountry = new AirportCountryDTO();
 			airportCountry.setCountryCode(country.getCountryCode());
 			airportCountry.setCountryName(country.getCountryName());
-			airportCountry.setNumberOfAirports(airportDAO.getAiportsByCountryCode(country.getCountryCode()).size());
-			logger.info("Country {} - {} has {} airports", new Object[]{airportCountry.getCountryCode(), airportCountry.getCountryName(), airportCountry.getNumberOfAirports()});
+			
+			List<Airport> airportsFiltered = allAirports.stream().filter(
+					airport -> airport.getIso_country().equals(airportCountry.getCountryCode()))
+				.collect(Collectors.toList());
+			
+			airportCountry.setNumberOfAirports(airportsFiltered.size());
+			
+			allAirports.removeAll(airportsFiltered);
+			
+			logger.debug("Country {} - {} has {} airports", new Object[]{airportCountry.getCountryCode(), airportCountry.getCountryName(), airportCountry.getNumberOfAirports()});
 			airportCountryInfo.add(airportCountry);
 		});
 		
