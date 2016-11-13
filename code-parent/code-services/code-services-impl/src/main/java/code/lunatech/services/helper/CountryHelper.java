@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import code.lunatech.dao.CountryDAO;
 import code.lunatech.dao.types.Country;
 import code.lunatech.services.dto.CountryDTO;
 import code.lunatech.services.mapper.CountryMapper;
 
+@Component
 public class CountryHelper {
 
 	@Autowired
