@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 import code.lunatech.dao.AirportDAO;
 import code.lunatech.dao.types.Airport;
 import code.lunatech.services.AirportService;
-import code.lunatech.services.CountryService;
-import code.lunatech.services.RunwayService;
 import code.lunatech.services.dto.AirportCountryDTO;
 import code.lunatech.services.dto.AirportDTO;
 import code.lunatech.services.dto.CountryDTO;
 import code.lunatech.services.dto.RunwayDTO;
+import code.lunatech.services.helper.CountryHelper;
+import code.lunatech.services.helper.RunwayHelper;
 import code.lunatech.services.mapper.AirportMapper;
 
 @Service
@@ -29,10 +29,10 @@ public class AirportServiceImpl implements AirportService {
 	private AirportDAO airportDAO;
 	
 	@Autowired
-	private RunwayService runwayService;
+	private RunwayHelper runwaysHelper;
 	
 	@Autowired
-	private CountryService countryService;
+	private CountryHelper countryHelper;
 	
 	@Override
 	public List<AirportDTO> getAirportsAndRunwaysInfoByCountry(String countryCode, String country) {
@@ -41,7 +41,7 @@ public class AirportServiceImpl implements AirportService {
 		if (countryCode != null && !countryCode.trim().isEmpty())	{
 			airports = airportDAO.getAiportsByCountryCode(countryCode);
 		} else {
-			CountryDTO countryDTO = countryService.getCountryCodeByName(country);
+			CountryDTO countryDTO = countryHelper.getCountryCodeByName(country);
 			logger.info("Obtained country {} with code {}", new Object[]{country, countryDTO.getCountryCode()});
 			airports = airportDAO.getAiportsByCountryCode(countryDTO.getCountryCode());
 		}
@@ -52,7 +52,7 @@ public class AirportServiceImpl implements AirportService {
 				airport -> AirportMapper.fromAirportToAirportDTO(airport))
 			.collect(Collectors.toList());
 	
-		List<RunwayDTO> allRunways = runwayService.getAllRunways();
+		List<RunwayDTO> allRunways = runwaysHelper.getAllRunways();
 		
 		logger.info("Obtained {} runways", new Object[]{allRunways.size()});
 		
@@ -69,7 +69,7 @@ public class AirportServiceImpl implements AirportService {
 	@Override
 	public List<AirportCountryDTO> getNumberOfAirportsByCountry() {
 		
-		List<CountryDTO> allCountries = countryService.getAllCountries();
+		List<CountryDTO> allCountries = countryHelper.getAllCountries();
 		logger.info("Found {} countries", new Object[]{allCountries.size()});
 		
 		List<AirportCountryDTO> airportCountryInfo = new ArrayList<AirportCountryDTO>();
